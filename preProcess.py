@@ -14,17 +14,18 @@ d = cmudict.dict()
 
 # taken from somewhere
 def nsyl(word):
-      return max([len([y for y in x if y[-1].isdigit()]) for x in d[word.lower()]])
+    if word.lower() not in d.keys():
+        return 11
+    return max([len([y for y in x if y[-1].isdigit()]) for x in d[word.lower()]])
 
 quatrainWords = []
 coupletWords = []
 voltaWords = []
-stanzaWords = []
 
 quatrains = []
 couplets = []
 voltas = []
-stanzas = []
+
 
 rhymes = {}
 
@@ -38,7 +39,10 @@ out_couplets = 'out_couplets.csv'
 out_rhymes = 'out_rhymes.json'
 out_quatrain_w_to_i = 'out_q_w_map.json' 
 out_volta_w_to_i = 'out_v_w_map.json' 
-out_couplets_w_to_i = 'out_c_w_map.json'  
+out_couplets_w_to_i = 'out_c_w_map.json'
+out_quatrain_i_to_nsyl = 'out_quatrain_n_syls.json' 
+out_volta_i_to_nsyl = 'out_volta_n_syls.json' 
+out_couplets_i_to_nsyl= 'out_couplets_n_syls.json'   
 
 shakeLines = f_shake.readlines()
 spenceLines = f_spence.readlines()
@@ -47,7 +51,7 @@ curLineinPoem = 0
 curQuatrain = []
 curCouplet = []
 curVolta = []
-curStanza = []
+
 
 rhymeA = "";
 rhymeB = "";
@@ -283,24 +287,36 @@ for i, line in enumerate(spenceLines):
 quatrain_word_map = {}
 volta_word_map = {}
 couplet_word_map = {}
+quatrain_n_syls_map = {}
+volta_n_syls_map = {}
+couplets_n_syls_map = {}
+
 count_words = 0
 
 for word in quatrainWords:
     if word not in quatrain_word_map.keys():
         quatrain_word_map[word] = count_words
         count_words += 1
+        if word not in quatrain_n_syls_map.keys():
+            quatrain_n_syls_map[count_words - 1] = nsyl(word)
 
 count_words = 0
 for word in voltaWords:
     if word not in volta_word_map.keys():
         volta_word_map[word] = count_words
         count_words += 1
+        if word not in volta_n_syls_map.keys():
+            volta_n_syls_map[count_words - 1] = nsyl(word)
 
 count_words = 0
 for word in coupletWords:
     if word not in couplet_word_map.keys():
         couplet_word_map[word] = count_words
         count_words += 1
+        if word not in couplets_n_syls_map.keys():
+            couplets_n_syls_map[count_words - 1] = nsyl(word)
+
+
 
 
 # Lines are separated by the newLine character, individual 
@@ -368,5 +384,20 @@ print('Dumped volta word map to ' + out_volta_w_to_i + '...')
 with open(out_couplets_w_to_i, 'w') as f: 
     json.dump(couplet_word_map, f)
 print('Dumped couplet_word_map to ' + out_couplets_w_to_i + '...')
+
+# Dumped quatrain number of syllables dictionary in JSON format
+with open(out_quatrain_i_to_nsyl, 'w') as f: 
+    json.dump(quatrain_n_syls_map, f)
+print('Dumped quatrain_n_syls_map to ' + out_quatrain_i_to_nsyl + '...')
+
+# Dumped volta number of syllables dictionary in JSON format
+with open(out_volta_i_to_nsyl, 'w') as f: 
+    json.dump(volta_n_syls_map, f)
+print('Dumped volta_n_syls_map to ' + out_volta_i_to_nsyl + '...')
+
+# Dumped couplet words dictionary in JSON format
+with open(out_couplets_i_to_nsyl, 'w') as f: 
+    json.dump(couplets_n_syls_map, f)
+print('Dumped couplets_n_syls_map to ' + out_couplets_i_to_nsyl + '...')
 
 
