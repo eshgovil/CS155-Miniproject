@@ -38,7 +38,7 @@ out_couplets = 'out_couplets.csv'
 out_rhymes = 'out_rhymes.json'
 out_quatrain_w_to_i = 'out_q_w_map.json' 
 out_volta_w_to_i = 'out_v_w_map.json' 
-out_couplets_w_to_i = 'out_c_w_map.json'  
+out_couplets_w_to_i = 'out_c_w_map.json' 
 
 shakeLines = f_shake.readlines()
 spenceLines = f_spence.readlines()
@@ -74,7 +74,7 @@ for i, line in enumerate(shakeLines):
             words[i - 1] += "'d"
             words.remove(elem)
             elem = words[i - 1]
-        elif elem in string.punctuation:
+        if elem in string.punctuation:
             words.remove(elem)
         prevElem = elem
 
@@ -183,6 +183,8 @@ for i, line in enumerate(spenceLines):
             words[i - 1] = "'tis"
             words.remove(elem)
             elem = words[i - 1]
+        elif elem == "":
+            words.remove(elem)
         elif elem == "'s": # Manually handle apostrophes
             words[i - 1] += "'s"
             words.remove(elem)
@@ -191,7 +193,7 @@ for i, line in enumerate(spenceLines):
             words[i - 1] += "'d"
             words.remove(elem)
             elem = words[i - 1]
-        elif elem in string.punctuation:
+        if elem in string.punctuation:
             words.remove(elem)
         prevElem = elem
 
