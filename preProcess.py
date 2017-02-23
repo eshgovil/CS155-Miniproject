@@ -102,37 +102,38 @@ for i, line in enumerate(shakeLines):
         curVolta = []
         #curStanza = []
         continue
-
+    lastWord = words[-1]
     if curLineinPoem < 4 or (curLineinPoem >= 8 and curLineinPoem < 12):
-        
-        lastWord = words[-1]
+    
         if (curLineinPoem % 4 == 0):
             rhymeA = lastWord 
         if (curLineinPoem % 4 == 2):
-            if rhymeA in q_rhymes.keys():
-                if (lastWord  not in q_rhymes[rhymeA]):
-                    q_rhymes[rhymeA].append(lastWord)
-            else:
-                q_rhymes[rhymeA] = [lastWord]
-            if lastWord in q_rhymes.keys():
-                if (rhymeA not in q_rhymes[lastWord]):
-                    q_rhymes[lastWord].append(rhymeA) 
-            else:
-                q_rhymes[lastWord] = [rhymeA]
+            if nsyl(lastWord) != 11 and nsyl(rhymeA) != 11:
+                if rhymeA in q_rhymes.keys():
+                    if (lastWord  not in q_rhymes[rhymeA]):
+                        q_rhymes[rhymeA].append(lastWord)
+                else:
+                    q_rhymes[rhymeA] = [lastWord]
+                if lastWord in q_rhymes.keys():
+                    if (rhymeA not in q_rhymes[lastWord]):
+                        q_rhymes[lastWord].append(rhymeA) 
+                else:
+                    q_rhymes[lastWord] = [rhymeA]
 
         if (curLineinPoem % 4 == 1):
             rhymeB = lastWord
         if (curLineinPoem % 4 == 3):
-            if rhymeB in q_rhymes.keys():
-                if (lastWord not in q_rhymes[rhymeB]):
-                    q_rhymes[rhymeB].append(lastWord)
-            else:
-                q_rhymes[rhymeB] = [lastWord]
-            if lastWord in q_rhymes.keys():
-                if (rhymeB not in q_rhymes[lastWord]):
-                    q_rhymes[lastWord].append(rhymeB) 
-            else:
-                q_rhymes[lastWord] = [rhymeB]
+            if nsyl(lastWord) != 11 and nsyl(rhymeB) != 11:
+                if rhymeB in q_rhymes.keys():
+                    if (lastWord not in q_rhymes[rhymeB]):
+                        q_rhymes[rhymeB].append(lastWord)
+                else:
+                    q_rhymes[rhymeB] = [lastWord]
+                if lastWord in q_rhymes.keys():
+                    if (rhymeB not in q_rhymes[lastWord]):
+                        q_rhymes[lastWord].append(rhymeB) 
+                else:
+                    q_rhymes[lastWord] = [rhymeB]
 
         quatrainWords += words
         curQuatrain += words
@@ -143,34 +144,35 @@ for i, line in enumerate(shakeLines):
             curQuatrain = []
     elif curLineinPoem >= 4 and curLineinPoem < 8:
         
-        lastWord = words[-1]
         if (curLineinPoem % 4 == 0):
             rhymeA = lastWord 
         if (curLineinPoem % 4 == 2):
-            if rhymeA in v_rhymes.keys():
-                if (lastWord  not in v_rhymes[rhymeA]):
-                    v_rhymes[rhymeA].append(lastWord)
-            else:
-                v_rhymes[rhymeA] = [lastWord]
-            if lastWord in v_rhymes.keys():
-                if (rhymeA not in v_rhymes[lastWord]):
-                    v_rhymes[lastWord].append(rhymeA) 
-            else:
-                v_rhymes[lastWord] = [rhymeA]
+            if nsyl(lastWord) != 11 and nsyl(rhymeA) != 11:
+                if rhymeA in v_rhymes.keys():
+                    if (lastWord  not in v_rhymes[rhymeA]):
+                        v_rhymes[rhymeA].append(lastWord)
+                else:
+                    v_rhymes[rhymeA] = [lastWord]
+                if lastWord in v_rhymes.keys():
+                    if (rhymeA not in v_rhymes[lastWord]):
+                        v_rhymes[lastWord].append(rhymeA) 
+                else:
+                    v_rhymes[lastWord] = [rhymeA]
 
         if (curLineinPoem % 4 == 1):
             rhymeB = lastWord
         if (curLineinPoem % 4 == 3):
-            if rhymeB in v_rhymes.keys():
-                if (lastWord not in v_rhymes[rhymeB]):
-                    v_rhymes[rhymeB].append(lastWord)
-            else:
-                v_rhymes[rhymeB] = [lastWord]
-            if lastWord in v_rhymes.keys():
-                if (rhymeB not in v_rhymes[lastWord]):
-                    v_rhymes[lastWord].append(rhymeB) 
-            else:
-                v_rhymes[lastWord] = [rhymeB]
+            if nsyl(lastWord) != 11 and nsyl(rhymeB) != 11:
+                if rhymeB in v_rhymes.keys():
+                    if (lastWord not in v_rhymes[rhymeB]):
+                        v_rhymes[rhymeB].append(lastWord)
+                else:
+                    v_rhymes[rhymeB] = [lastWord]
+                if lastWord in v_rhymes.keys():
+                    if (rhymeB not in v_rhymes[lastWord]):
+                        v_rhymes[lastWord].append(rhymeB) 
+                else:
+                    v_rhymes[lastWord] = [rhymeB]
 
         voltaWords += words
         curVolta += words
@@ -180,16 +182,17 @@ for i, line in enumerate(shakeLines):
         if (curLineinPoem == 12):
             rhymeG = lastWord
         if (curLineinPoem == 13):
-            if rhymeG in c_rhymes.keys():
-                if (lastWord not in c_rhymes[rhymeG]):
-                    c_rhymes[rhymeG].append(lastWord)
-            else:
-                c_rhymes[rhymeG] = [lastWord]
-            if lastWord in c_rhymes.keys():
-                if (rhymeG not in c_rhymes[lastWord]):
-                    c_rhymes[lastWord].append(rhymeG) 
-            else:
-                c_rhymes[lastWord] = [rhymeG]
+            if nsyl(lastWord) != 11 and nsyl(rhymeG) != 11:
+                if rhymeG in c_rhymes.keys():
+                    if (lastWord not in c_rhymes[rhymeG]):
+                        c_rhymes[rhymeG].append(lastWord)
+                else:
+                    c_rhymes[rhymeG] = [lastWord]
+                if lastWord in c_rhymes.keys():
+                    if (rhymeG not in c_rhymes[lastWord]):
+                        c_rhymes[lastWord].append(rhymeG) 
+                else:
+                    c_rhymes[lastWord] = [rhymeG]
 
         coupletWords += words
         curCouplet += words
@@ -246,37 +249,37 @@ for i, line in enumerate(spenceLines):
         curVolta = []
         #curStanza = []
         continue
-
+    lastWord = words[-1]
     if curLineinPoem < 4 or (curLineinPoem >= 8 and curLineinPoem < 12):
-        
-        lastWord = words[-1]
         if (curLineinPoem % 4 == 0):
             rhymeA = lastWord 
         if (curLineinPoem % 4 == 2):
-            if rhymeA in q_rhymes.keys():
-                if (lastWord  not in q_rhymes[rhymeA]):
-                    q_rhymes[rhymeA].append(lastWord)
-            else:
-                q_rhymes[rhymeA] = [lastWord]
-            if lastWord in q_rhymes.keys():
-                if (rhymeA not in q_rhymes[lastWord]):
-                    q_rhymes[lastWord].append(rhymeA) 
-            else:
-                q_rhymes[lastWord] = [rhymeA]
+            if nsyl(lastWord) != 11 and nsyl(rhymeA) != 11:
+                if rhymeA in q_rhymes.keys():
+                    if (lastWord  not in q_rhymes[rhymeA]):
+                        q_rhymes[rhymeA].append(lastWord)
+                else:
+                    q_rhymes[rhymeA] = [lastWord]
+                if lastWord in q_rhymes.keys():
+                    if (rhymeA not in q_rhymes[lastWord]):
+                        q_rhymes[lastWord].append(rhymeA) 
+                else:
+                    q_rhymes[lastWord] = [rhymeA]
 
         if (curLineinPoem % 4 == 1):
             rhymeB = lastWord
         if (curLineinPoem % 4 == 3):
-            if rhymeB in q_rhymes.keys():
-                if (lastWord not in q_rhymes[rhymeB]):
-                    q_rhymes[rhymeB].append(lastWord)
-            else:
-                q_rhymes[rhymeB] = [lastWord]
-            if lastWord in q_rhymes.keys():
-                if (rhymeB not in q_rhymes[lastWord]):
-                    q_rhymes[lastWord].append(rhymeB) 
-            else:
-                q_rhymes[lastWord] = [rhymeB]
+            if nsyl(lastWord) != 11 and nsyl(rhymeB) != 11:
+                if rhymeB in q_rhymes.keys():
+                    if (lastWord not in q_rhymes[rhymeB]):
+                        q_rhymes[rhymeB].append(lastWord)
+                else:
+                    q_rhymes[rhymeB] = [lastWord]
+                if lastWord in q_rhymes.keys():
+                    if (rhymeB not in q_rhymes[lastWord]):
+                        q_rhymes[lastWord].append(rhymeB) 
+                else:
+                    q_rhymes[lastWord] = [rhymeB]
 
         quatrainWords += words
         curQuatrain += words
@@ -286,35 +289,35 @@ for i, line in enumerate(spenceLines):
             quatrains.append(curQuatrain)
             curQuatrain = []
     elif curLineinPoem >= 4 and curLineinPoem < 8:
-        
-        lastWord = words[-1]
         if (curLineinPoem % 4 == 0):
             rhymeA = lastWord 
         if (curLineinPoem % 4 == 2):
-            if rhymeA in v_rhymes.keys():
-                if (lastWord  not in v_rhymes[rhymeA]):
-                    v_rhymes[rhymeA].append(lastWord)
-            else:
-                v_rhymes[rhymeA] = [lastWord]
-            if lastWord in v_rhymes.keys():
-                if (rhymeA not in v_rhymes[lastWord]):
-                    v_rhymes[lastWord].append(rhymeA) 
-            else:
-                v_rhymes[lastWord] = [rhymeA]
+            if nsyl(lastWord) != 11 and nsyl(rhymeA) != 11:
+                if rhymeA in v_rhymes.keys():
+                    if (lastWord  not in v_rhymes[rhymeA]):
+                        v_rhymes[rhymeA].append(lastWord)
+                else:
+                    v_rhymes[rhymeA] = [lastWord]
+                if lastWord in v_rhymes.keys():
+                    if (rhymeA not in v_rhymes[lastWord]):
+                        v_rhymes[lastWord].append(rhymeA) 
+                else:
+                    v_rhymes[lastWord] = [rhymeA]
 
         if (curLineinPoem % 4 == 1):
             rhymeB = lastWord
         if (curLineinPoem % 4 == 3):
-            if rhymeB in v_rhymes.keys():
-                if (lastWord not in v_rhymes[rhymeB]):
-                    v_rhymes[rhymeB].append(lastWord)
-            else:
-                v_rhymes[rhymeB] = [lastWord]
-            if lastWord in v_rhymes.keys():
-                if (rhymeB not in v_rhymes[lastWord]):
-                    v_rhymes[lastWord].append(rhymeB) 
-            else:
-                v_rhymes[lastWord] = [rhymeB]
+            if nsyl(lastWord) != 11 and nsyl(rhymeB) != 11:
+                if rhymeB in v_rhymes.keys():
+                    if (lastWord not in v_rhymes[rhymeB]):
+                        v_rhymes[rhymeB].append(lastWord)
+                else:
+                    v_rhymes[rhymeB] = [lastWord]
+                if lastWord in v_rhymes.keys():
+                    if (rhymeB not in v_rhymes[lastWord]):
+                        v_rhymes[lastWord].append(rhymeB) 
+                else:
+                    v_rhymes[lastWord] = [rhymeB]
 
         voltaWords += words
         curVolta += words
@@ -324,16 +327,17 @@ for i, line in enumerate(spenceLines):
         if (curLineinPoem == 12):
             rhymeG = lastWord
         if (curLineinPoem == 13):
-            if rhymeG in c_rhymes.keys():
-                if (lastWord not in c_rhymes[rhymeG]):
-                    c_rhymes[rhymeG].append(lastWord)
-            else:
-                c_rhymes[rhymeG] = [lastWord]
-            if lastWord in c_rhymes.keys():
-                if (rhymeG not in c_rhymes[lastWord]):
-                    c_rhymes[lastWord].append(rhymeG) 
-            else:
-                c_rhymes[lastWord] = [rhymeG]
+            if nsyl(lastWord) != 11 and nsyl(rhymeG) != 11:
+                if rhymeG in c_rhymes.keys():
+                    if (lastWord not in c_rhymes[rhymeG]):
+                        c_rhymes[rhymeG].append(lastWord)
+                else:
+                    c_rhymes[rhymeG] = [lastWord]
+                if lastWord in c_rhymes.keys():
+                    if (rhymeG not in c_rhymes[lastWord]):
+                        c_rhymes[lastWord].append(rhymeG) 
+                else:
+                    c_rhymes[lastWord] = [rhymeG]
 
         coupletWords += words
         curCouplet += words
@@ -464,14 +468,14 @@ print('Dumped couplets_n_syls_map to ' + out_couplets_i_to_nsyl + '...')
 # Dumped quatrain rhyme dictionary in JSON format
 with open(out_q_rhymes, 'w') as f: 
     json.dump(q_rhymes, f)
-print('Dumped quatrain_n_syls_map to ' + out_q_rhymes + '...')
+print('Dumped quatrain_rhymes to ' + out_q_rhymes + '...')
 
 # Dumped volta rhyme dictionary in JSON format
 with open(out_v_rhymes, 'w') as f: 
     json.dump(v_rhymes, f)
-print('Dumped volta_n_syls_map to ' + out_v_rhymes + '...')
+print('Dumped volta_rhymes to ' + out_v_rhymes + '...')
 
 # Dumped couplet rhyme dictionary in JSON format
 with open(out_c_rhymes, 'w') as f: 
     json.dump(c_rhymes, f)
-print('Dumped couplets_n_syls_map to ' + out_v_rhymes + '...')
+print('Dumped couplets_rhymes to ' + out_c_rhymes + '...')

@@ -37,7 +37,7 @@ with open(out_volta_w_to_i, 'r') as vr:
 with open(out_couplets_w_to_i, 'r') as cr: 
     crd = cr.read()
     coupletWordMap = json.loads(crd)
-    copuletIntMap = dict((int(v),k) for (k,v) in coupletWordMap.items())
+    coupletIntMap = dict((int(v),k) for (k,v) in coupletWordMap.items())
 
 # Pull in the quatrain world-to-syllable map
 with open(out_quatrain_n_syls, 'r') as ns:
@@ -128,7 +128,7 @@ with open(out_volta_rhymes, 'r') as rf:
 # Get the couplets rhyming dictionary
 with open(out_couplets_rhymes, 'r') as rf:
     rd = rf.read()
-    couplets_rhymes = json.loads(rd)
+    couplet_rhymes = json.loads(rd)
 
 quatrainStates = 30
 quatrainObservations = len(quatrainWordMap)
@@ -146,14 +146,14 @@ def generate_quatrain(quatHMM):
     b_rhyme = ''
     for i in range(4): 
         if i == 0: # Line A1
-            firstWordStr = str(random.choice(quatrain_rhymes.keys()))
+            firstWordStr = str(random.choice(list(quatrain_rhymes.keys())))
             firstWordInt = quatrainWordMap[firstWordStr]
             line = quatHMM.generate_emission(firstWordInt, quatrain_n_syls)
             randomRhyme = str(random.choice(quatrain_rhymes[firstWordStr]))
             a_rhyme = quatrainWordMap[randomRhyme]
 
         elif i == 1: # Line B1
-            firstWordStr = str(random.choice(quatrain_rhymes.keys()))
+            firstWordStr = str(random.choice(list(quatrain_rhymes.keys())))
             firstWordInt = quatrainWordMap[firstWordStr]
             line = quatHMM.generate_emission(firstWordInt, quatrain_n_syls)
             randomRhyme = str(random.choice(quatrain_rhymes[firstWordStr]))
@@ -184,6 +184,90 @@ def generate_quatrain(quatHMM):
     quatrain = quatrain.replace(',\n<>', '.\n')
     return quatrain
 
+def generate_volta(voltHMM):
+    '''
+    Generates a single volta. voltas follow the ABAB rhyme scheme.
+    '''
+    volta = ''
+    a_rhyme = ''
+    b_rhyme = ''
+    for i in range(4): 
+        if i == 0: # Line A1
+            firstWordStr = str(random.choice(list(volta_rhymes.keys())))
+            firstWordInt = voltaWordMap[firstWordStr]
+            line = voltHMM.generate_emission(firstWordInt, volta_n_syls)
+            randomRhyme = str(random.choice(volta_rhymes[firstWordStr]))
+            a_rhyme = voltaWordMap[randomRhyme]
+
+        elif i == 1: # Line B1
+            firstWordStr = str(random.choice(list(volta_rhymes.keys())))
+            firstWordInt = voltaWordMap[firstWordStr]
+            line = voltHMM.generate_emission(firstWordInt, volta_n_syls)
+            randomRhyme = str(random.choice(volta_rhymes[firstWordStr]))
+            b_rhyme = voltaWordMap[randomRhyme]
+
+        elif i == 2: # Line A2
+            line = voltHMM.generate_emission(a_rhyme, volta_n_syls)
+
+        elif i == 3: # Line B2
+            line = voltHMM.generate_emission(b_rhyme, volta_n_syls)
+
+        # Split up the line and reverse the order of the emission
+        line = line.split('-')
+        line.reverse()
+
+        # Map the integers in the emission back to their corresponding strings
+        line = ' '.join([str(voltaIntMap[int(x)]) for x in line])
+
+        # Capitalize the first letter of each line
+        line = line[0].upper() + line[1:]
+        line = line.replace(' i ', ' I ')
+
+        # Comma at the end of each line
+        volta += line + ',\n'
+
+    # End the volta with a period
+    volta += '<>'
+    volta = volta.replace(',\n<>', '.\n')
+    return volta
+
+def generate_couplet(coupletHMM):
+    '''
+    Generates a single couplet. couplets follow the ABAB rhyme scheme.
+    '''
+    couplet = ''
+    a_rhyme = ''
+
+    for i in range(2): 
+        if i == 0: # Line G1
+            firstWordStr = str(random.choice(list(couplet_rhymes.keys())))
+            firstWordInt = coupletWordMap[firstWordStr]
+            line = coupletHMM.generate_emission(firstWordInt, couplet_n_syls)
+            randomRhyme = str(random.choice(couplet_rhymes[firstWordStr]))
+            a_rhyme = coupletWordMap[randomRhyme]
+
+        elif i == 1: # Line G2
+            line = coupletHMM.generate_emission(a_rhyme, couplet_n_syls)
+
+        # Split up the line and reverse the order of the emission
+        line = line.split('-')
+        line.reverse()
+
+        # Map the integers in the emission back to their corresponding strings
+        line = ' '.join([str(coupletIntMap[int(x)]) for x in line])
+
+        # Capitalize the first letter of each line
+        line = line[0].upper() + line[1:]
+        line = line.replace(' i ', ' I ')
+
+        # Comma at the end of each line
+        couplet += line + ',\n'
+
+    # End the couplet with a period
+    couplet += '<>'
+    couplet = couplet.replace(',\n<>', '.\n')
+    return couplet
+
 # Train an HMM for the Quatrains
 quatHMM = unsupervised_HMM(quatrainX, quatrainStates, quatrainObservations, 1)
 quatrain_1 = generate_quatrain(quatHMM)
@@ -192,3 +276,23 @@ quatrain_2 = generate_quatrain(quatHMM)
 print("\n")
 print(str(quatrain_1))
 print(str(quatrain_2))
+
+# Train an HMM for the Voltas
+voltHMM = unsupervised_HMM(voltaX, voltaStates, voltaObservations, 1)
+volta_1 = generate_volta(voltHMM)
+volta_2 = generate_volta(voltHMM)
+
+print("\n")
+print(str(volta_1))
+print(str(volta_2))
+
+# Train an HMM for the Coupletas
+coupletHMM = unsupervised_HMM(coupletX, coupletStates, coupletObservations, 1)
+couplet_1 = generate_couplet(coupletHMM)
+couplet_2 = generate_couplet(coupletHMM)
+
+print("\n")
+print(str(couplet_1))
+print(str(couplet_2))
+
+
