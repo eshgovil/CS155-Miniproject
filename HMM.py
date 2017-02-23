@@ -280,23 +280,23 @@ class HiddenMarkovModel:
         emission += str(next_obs) + "-"
         cur_syls = n_syls[start_obs]
 
-        while cur_syls != 10: # While line isn't 10 syllables long
+        while cur_syls < 10: # While line isn't 10 syllables long
             # Will store probability distribution of next observation options
             options = [] 
             total_prob = 0.0
 
             # Sample next word from normalized distribution of words that 
             # won't bring us over syllable max
-            for i, obs in enumerate(self.O[state]): 
-                if cur_syls + n_syls[self.O[state][i]] <= 10: 
-                    options.append(obs)
-                    total_prob += obs
+            for i, p_obs in enumerate(self.O[state]): 
+                if cur_syls + n_syls[i] <= 10: 
+                    options.append(p_obs)
+                    total_prob += p_obs
                 else:
-                    options.append(obs)
+                    options.append(0)
 
             # Select the next observation
             options = np.array([x / total_prob for x in options])
-            next_obs = np.random.choice(self.O[state], p=options)
+            next_obs = np.random.choice(range(len(self.O[state])), p=options)
             emission += str(next_obs) + "-"
             cur_syls += n_syls[next_obs]
 

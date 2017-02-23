@@ -8,12 +8,15 @@ from HMM import *
 out_quatrains       = 'out_quatrains.csv' 
 out_voltas          = 'out_voltas.csv' 
 out_couplets        = 'out_couplets.csv'
-out_quatrain_rhymes = 'out_quatrain_rhymes.json'
-out_volta_rhymes    = 'out_volta_rhymes.json'
-out_couplets_rhymes = 'out_couplets_rhymes.json'
+
 out_quatrain_w_to_i = 'out_q_w_map.json' 
 out_volta_w_to_i    = 'out_v_w_map.json' 
 out_couplets_w_to_i = 'out_c_w_map.json' 
+
+out_quatrain_rhymes = 'out_quatrain_rhymes.json'
+out_volta_rhymes    = 'out_volta_rhymes.json'
+out_couplets_rhymes = 'out_couplets_rhymes.json'
+
 out_quatrain_n_syls = 'out_quatrain_n_syls.json' 
 out_volta_n_syls    = 'out_volta_n_syls.json'
 out_couplets_n_syls = 'out_couplets_n_syls.json'
@@ -146,14 +149,14 @@ def generate_quatrain(quatHMM):
             firstWordStr = str(random.choice(quatrain_rhymes.keys()))
             firstWordInt = quatrainWordMap[firstWordStr]
             line = quatHMM.generate_emission(firstWordInt, quatrain_n_syls)
-            randomRhyme = str(random.choice(rhymes[firstWordStr]))
+            randomRhyme = str(random.choice(quatrain_rhymes[firstWordStr]))
             a_rhyme = quatrainWordMap[randomRhyme]
 
         elif i == 1: # Line B1
             firstWordStr = str(random.choice(quatrain_rhymes.keys()))
             firstWordInt = quatrainWordMap[firstWordStr]
             line = quatHMM.generate_emission(firstWordInt, quatrain_n_syls)
-            randomRhyme = str(random.choice(rhymes[firstWordStr]))
+            randomRhyme = str(random.choice(quatrain_rhymes[firstWordStr]))
             b_rhyme = quatrainWordMap[randomRhyme]
 
         elif i == 2: # Line A2
@@ -186,5 +189,6 @@ quatHMM = unsupervised_HMM(quatrainX, quatrainStates, quatrainObservations, 1)
 quatrain_1 = generate_quatrain(quatHMM)
 quatrain_2 = generate_quatrain(quatHMM)
 
+print("\n")
 print(str(quatrain_1))
 print(str(quatrain_2))
