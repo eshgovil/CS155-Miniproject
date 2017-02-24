@@ -269,7 +269,7 @@ def generate_couplet(coupletHMM):
     return couplet
 
 # Train an HMM for the Quatrains
-quatHMM = unsupervised_HMM(quatrainX, quatrainStates, quatrainObservations, 1)
+quatHMM = unsupervised_HMM(quatrainX, quatrainStates, quatrainObservations, 5)
 quatrain_1 = generate_quatrain(quatHMM)
 quatrain_2 = generate_quatrain(quatHMM)
 
@@ -278,7 +278,7 @@ print(str(quatrain_1))
 print(str(quatrain_2))
 
 # Train an HMM for the Voltas
-voltHMM = unsupervised_HMM(voltaX, voltaStates, voltaObservations, 1)
+voltHMM = unsupervised_HMM(voltaX, voltaStates, voltaObservations, 5)
 volta_1 = generate_volta(voltHMM)
 volta_2 = generate_volta(voltHMM)
 
@@ -287,7 +287,7 @@ print(str(volta_1))
 print(str(volta_2))
 
 # Train an HMM for the Coupletas
-coupletHMM = unsupervised_HMM(coupletX, coupletStates, coupletObservations, 1)
+coupletHMM = unsupervised_HMM(coupletX, coupletStates, coupletObservations, 5)
 couplet_1 = generate_couplet(coupletHMM)
 couplet_2 = generate_couplet(coupletHMM)
 
