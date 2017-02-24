@@ -9,15 +9,10 @@ from sklearn.preprocessing import LabelEncoder
 import json
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-nltk.download()
-=======
+
+
+
 # nltk.download()
->>>>>>> origin/master
-=======
-#nltk.download()
->>>>>>> origin/master
 d = cmudict.dict()
 
 count_problems = 0
@@ -75,97 +70,7 @@ rhymeG = "";
 
 # Build lists of quatrains, voltas, and couplets for Shakespeare's Poems
 for i, line in enumerate(shakeLines):
-<<<<<<< HEAD
-	if line == '\n':
-		continue
 
-	words = word_tokenize(line)
-
-	for elem in words:
-		if elem in string.punctuation:
-			words.remove(elem)
-
-	if words[0].isdigit():
-		quatrains.append(curQuatrain)
-		voltas.append(curVolta)
-		couplets.append(curCouplet)
-		stanzas.append(curStanza)
-		curLineinPoem = 0
-		curQuatrain = []
-		curCouplet = []
-		curVolta = []
-		curStanza = []
-		continue
-
-	# Build dictionary of rhymes
-	if curLineinPoem < 12:
-		if (curLineinPoem % 4 == 0):
-			rhymeA = words[-1]
-		if (curLineinPoem % 4 == 2):
-			if rhymeA in rhymes.keys():
-				if (words[-1] not in rhymes[rhymeA]):
-					rhymes[rhymeA].append(words[-1])
-			else:
-				rhymes[rhymeA] = [words[-1]]
-			if words[-1] in rhymes.keys():
-				if (rhymeA not in rhymes[words[-1]]):
-					rhymes[words[-1]].append(rhymeA) 
-			else:
-				rhymes[words[-1]] = [rhymeA]
-
-		if (curLineinPoem % 4 == 1):
-			rhymeB = words[-1]
-		if (curLineinPoem % 4 == 3):
-			if rhymeB in rhymes.keys():
-				if (words[-1] not in rhymes[rhymeB]):
-					rhymes[rhymeB].append(words[-1])
-			else:
-				rhymes[rhymeB] = [words[-1]]
-			if words[-1] in rhymes.keys():
-				if (rhymeB not in rhymes[words[-1]]):
-					rhymes[words[-1]].append(rhymeB) 
-			else:
-				rhymes[words[-1]] = [rhymeB]
-	else:
-		if (curLineinPoem == 12):
-			rhymeG = words[-1]
-		if (curLineinPoem == 13):
-			if rhymeG in rhymes.keys():
-				if (words[-1] not in rhymes[rhymeG]):
-					rhymes[rhymeG].append(words[-1])
-			else:
-				rhymes[rhymeG] = [words[-1]]
-			if words[-1] in rhymes.keys():
-				if (rhymeG not in rhymes[words[-1]]):
-					rhymes[words[-1]].append(rhymeG) 
-			else:
-				rhymes[words[-1]] = [rhymeG]
-
-	if curLineinPoem < 4 or (curLineinPoem > 8 and curLineinPoem < 12):
-		quatrainWords += words
-		curQuatrain += words
-		if curLineinPoem % 4 != 3:
-			curQuatrain += ['\n']
-	elif curLineinPoem > 4 and curLineinPoem <= 8:
-		voltaWords += words
-		curVolta += words
-		if curLineinPoem != 8:
-			curVolta += ['\n']
-	else:
-		coupletWords += words
-		curCouplet += words
-		if curLineinPoem != 13:
-			curCouplet += ['\n']
-	stanzaWords += words
-	curStanza += words
-	if curLineinPoem != 13:
-		curStanza += ['\n']
-	curLineinPoem += 1
-
-print (quatrains)
-
-# Use MultinomialHMM
-=======
     if line == '\n':
         continue
 
@@ -559,9 +464,6 @@ with open(out_volta_i_to_nsyl, 'w') as f:
     json.dump(volta_n_syls_map, f)
 print('Dumped volta_n_syls_map to ' + out_volta_i_to_nsyl + '...')
 
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
 # Dumped couplet words dictionary in JSON format
 with open(out_couplets_i_to_nsyl, 'w') as f: 
     json.dump(couplets_n_syls_map, f)
@@ -581,4 +483,3 @@ print('Dumped volta_rhymes to ' + out_v_rhymes + '...')
 with open(out_c_rhymes, 'w') as f: 
     json.dump(c_rhymes, f)
 print('Dumped couplets_rhymes to ' + out_c_rhymes + '...')
->>>>>>> origin/master
