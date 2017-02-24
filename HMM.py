@@ -6,7 +6,7 @@
 # Description:  Set 5 solutions
 ########################################
 
-import random
+import random, sys, numpy as np
 
 class HiddenMarkovModel:
     '''
@@ -193,7 +193,8 @@ class HiddenMarkovModel:
         # the code under the comment is part of the M-step.
 
         for iteration in range(iters):
-            print("Iteration: " + str(iteration))
+            sys.stdout.write("Iteration: " + str(iteration + 1) + '/' + str(iters) + '\r')
+            sys.stdout.flush()
 
             # Numerator and denominator for the update terms of A and O.
             A_num = [[0. for i in range(self.L)] for j in range(self.L)]
@@ -260,7 +261,7 @@ class HiddenMarkovModel:
                 for xt in range(self.D):
                     self.O[curr][xt] = O_num[curr][xt] / O_den[curr]
 
-    def generate_emission(self, M):
+    def generate_emission(self, start_obs, n_syls):
         '''
         Generates an emission of length M, assuming that the starting state
         is chosen uniformly at random. 
@@ -274,18 +275,30 @@ class HiddenMarkovModel:
 
         emission = ''
         state = random.choice(range(self.L))
+        start_ind = 1
+        next_obs = start_obs
+        emission += str(next_obs) + "-"
+        cur_syls = n_syls[start_obs]
 
-        for t in range(M):
-            # Sample next observation.
-            rand_var = random.uniform(0, 1)
-            next_obs = 0
+        while cur_syls < 10: # While line isn't 10 syllables long
+            # Will store probability distribution of next observation options
+            options = [] 
+            total_prob = 0.0
 
-            while rand_var > 0:
-                rand_var -= self.O[state][next_obs]
-                next_obs += 1
+            # Sample next word from normalized distribution of words that 
+            # won't bring us over syllable max
+            for i, p_obs in enumerate(self.O[state]): 
+                if cur_syls + n_syls[i] <= 10: 
+                    options.append(p_obs)
+                    total_prob += p_obs
+                else:
+                    options.append(0)
 
-            next_obs -= 1
-            emission += str(next_obs)
+            # Select the next observation
+            options = np.array([x / total_prob for x in options])
+            next_obs = np.random.choice(range(len(self.O[state])), p=options)
+            emission += str(next_obs) + "-"
+            cur_syls += n_syls[next_obs]
 
             # Sample next state.
             rand_var = random.uniform(0, 1)
@@ -298,9 +311,12 @@ class HiddenMarkovModel:
             next_state -= 1
             state = next_state
 
+        emission += '<>'
+        emission = emission.replace('-<>','')
+
         return emission
 
-def unsupervised_HMM(X, n_states, n_iters):
+def unsupervised_HMM(X, n_states, n_obs, n_iters):
     '''
     Helper function to train an unsupervised HMM. The function determines the
     number of unique observations in the given data, initializes
@@ -322,7 +338,7 @@ def unsupervised_HMM(X, n_states, n_iters):
     
     # Compute L and D.
     L = n_states
-    D = len(observations)
+    D = n_obs
 
     # Randomly initialize and normalize matrices A and O.
     A = [[random.random() for i in range(L)] for j in range(L)]
