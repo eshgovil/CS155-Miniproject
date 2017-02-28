@@ -9,36 +9,45 @@ from sklearn.preprocessing import LabelEncoder
 import json
 
 
-
-
-
 # nltk.download()
 d = cmudict.dict()
 
-count_problems = 0
 # taken from somewhere
 def nsyl(word):
     if word.lower() not in d.keys():
         return 11
     return max([len([y for y in x if y[-1].isdigit()]) for x in d[word.lower()]])
 
+# initalize list of words per line
 quatrainWords = []
 coupletWords = []
 voltaWords = []
 
+# initalize list of entire stanzas
 quatrains = []
 couplets = []
 voltas = []
 
-
+# Build word-rhyming words map
 q_rhymes = {}
 v_rhymes = {}
 c_rhymes = {}
 
+# Build map of word (corresponding integer) to syllable count 
+# for quatrains, voltas, and couplets
+quatrain_n_syls_map = {}
+volta_n_syls_map = {}
+couplets_n_syls_map = {}
+
+# Build map of words to a corresponding integer (for input into HMM)
+quatrain_word_map = {}
+volta_word_map = {}
+couplet_word_map = {}
+
 f_shake = open('./project2data/shakespeare.txt')
 f_spence = open('./project2data/spenser.txt')
 
-
+# files to output processed data to
 out_quatrains= 'out_quatrains.csv' 
 out_voltas = 'out_voltas.csv' 
 out_couplets = 'out_couplets.csv'
@@ -56,9 +65,11 @@ out_quatrain_i_to_nsyl = 'out_quatrain_n_syls.json'
 out_volta_i_to_nsyl = 'out_volta_n_syls.json' 
 out_couplets_i_to_nsyl= 'out_couplets_n_syls.json'   
 
+# open input files
 shakeLines = f_shake.readlines()
 spenceLines = f_spence.readlines()
 
+# initialize variables to be used
 curLineinPoem = 0
 curQuatrain = []
 curCouplet = []
@@ -74,8 +85,10 @@ for i, line in enumerate(shakeLines):
     if line == '\n':
         continue
 
+    # tokenize all the words in the line
     words = [x.lower() for x in word_tokenize(line)]
 
+    # handle special words
     prevElem = words[0]
     for i, elem in enumerate(words):
         if elem == "is" and prevElem == "'t": # Handle 'tis... unique case
@@ -94,8 +107,11 @@ for i, line in enumerate(shakeLines):
             words.remove(elem)
         prevElem = elem
 
+    # for every time there is a new sonnet in the data file
     if words[0].isdigit():
         if (curQuatrain != []):
+            # our lists hold the previous quatrains, voltas, and couplets
+            # which we now append to our main list
             quatrains.append(curQuatrain)
             voltas.append(curVolta)
             couplets.append(curCouplet)
@@ -106,11 +122,15 @@ for i, line in enumerate(shakeLines):
         curVolta = []
         #curStanza = []
         continue
+
+    # put rhyme into rhyme dictionary based on last word and what line it is
+    # for quatrains
     lastWord = words[-1]
     if curLineinPoem < 4 or (curLineinPoem >= 8 and curLineinPoem < 12):
-    
+        # if it's the first line, save current last word
         if (curLineinPoem % 4 == 0):
             rhymeA = lastWord 
+        # if it's the third line, map as a rhyme of the stored word
         if (curLineinPoem % 4 == 2):
             if nsyl(lastWord) != 11 and nsyl(rhymeA) != 11:
                 if rhymeA in q_rhymes.keys():
@@ -124,8 +144,10 @@ for i, line in enumerate(shakeLines):
                 else:
                     q_rhymes[lastWord] = [rhymeA]
 
+        # store rhyme for second line
         if (curLineinPoem % 4 == 1):
             rhymeB = lastWord
+        # map last word of fourth line as rhyme of the second line word
         if (curLineinPoem % 4 == 3):
             if nsyl(lastWord) != 11 and nsyl(rhymeB) != 11:
                 if rhymeB in q_rhymes.keys():
@@ -139,15 +161,18 @@ for i, line in enumerate(shakeLines):
                 else:
                     q_rhymes[lastWord] = [rhymeB]
 
+        # add words list into quatrain lists
         quatrainWords += words
         curQuatrain += words
         if curLineinPoem % 4 != 3:
             curQuatrain += ['\n']
+        # append first quatrain
         elif curLineinPoem == 3:
             quatrains.append(curQuatrain)
             curQuatrain = []
     elif curLineinPoem >= 4 and curLineinPoem < 8:
         
+        # handle last word rhymes for voltas
         if (curLineinPoem % 4 == 0):
             rhymeA = lastWord 
         if (curLineinPoem % 4 == 2):
@@ -178,10 +203,13 @@ for i, line in enumerate(shakeLines):
                 else:
                     v_rhymes[lastWord] = [rhymeB]
 
+        # add list of words in volta lists
         voltaWords += words
         curVolta += words
         if curLineinPoem != 7:
             curVolta += ['\n']
+
+    # handle rhymes in the couplets
     else:
         if (curLineinPoem == 12):
             rhymeG = lastWord
@@ -198,29 +226,29 @@ for i, line in enumerate(shakeLines):
                 else:
                     c_rhymes[lastWord] = [rhymeG]
 
+        # add list of words to couplets list
         coupletWords += words
         curCouplet += words
         if curLineinPoem != 13:
             curCouplet += ['\n']
     curLineinPoem += 1
 
-
-
+# reset everything for spencers data splicing
 curLineinPoem = 0
 curQuatrain = []
 curCouplet = []
 curVolta = []
 #curStanza = []
 
-
-
 # Build lists of quatrains, voltas, and couplets for Spencer's Poems
 for i, line in enumerate(spenceLines):
     if line == '\n':
         continue
 
+    # tokenize words in line
     words = [x.lower() for x in word_tokenize(line)]
 
+    # handle special symbols/words
     prevElem = words[0]
     for i, elem in enumerate(words):
         if elem == "is" and prevElem == "'t": # Handle 'tis... unique case
@@ -241,8 +269,11 @@ for i, line in enumerate(spenceLines):
             words.remove(elem)
         prevElem = elem
 
+    # single word indicates new sonnet so reset temporary lists
     if len(words) == 1:
         if (curQuatrain != []):
+            # our lists hold the previous quatrains, voltas, and couplets
+            # which we now append to our main list
             quatrains.append(curQuatrain)
             voltas.append(curVolta)
             couplets.append(curCouplet)
@@ -253,6 +284,8 @@ for i, line in enumerate(spenceLines):
         curVolta = []
         #curStanza = []
         continue
+
+    # handle rhyming in quatrains based on line number and add to map
     lastWord = words[-1]
     if curLineinPoem < 4 or (curLineinPoem >= 8 and curLineinPoem < 12):
         if (curLineinPoem % 4 == 0):
@@ -285,6 +318,7 @@ for i, line in enumerate(spenceLines):
                 else:
                     q_rhymes[lastWord] = [rhymeB]
 
+        # add current line to lists for quatrains
         quatrainWords += words
         curQuatrain += words
         if curLineinPoem % 4 != 3:
@@ -349,18 +383,13 @@ for i, line in enumerate(spenceLines):
             curCouplet += ['\n']
     curLineinPoem += 1
 
+# count for number of words above 11 syllables
+count_problems = 0
 
-
-# Building separate word maps for quatrains, voltas, and couplets
-quatrain_word_map = {}
-volta_word_map = {}
-couplet_word_map = {}
-quatrain_n_syls_map = {}
-volta_n_syls_map = {}
-couplets_n_syls_map = {}
-
+# Map each word to a unique integer for input into the HMM
+# then map from that integer to that words number of syllables
+# for quatrains, voltas and couplets
 count_words = 0
-
 for word in quatrainWords:
     if word not in quatrain_word_map.keys():
         quatrain_word_map[word] = count_words
@@ -389,8 +418,6 @@ for word in coupletWords:
             if nsyl(word) == 11:
                 count_problems += 1
             couplets_n_syls_map[count_words - 1] = nsyl(word)
-
-
 
 
 # Lines are separated by the newLine character, individual 

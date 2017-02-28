@@ -271,6 +271,8 @@ class HiddenMarkovModel:
 
         Returns:
             emission:   The randomly generated emission as a string.
+
+        Handles syllable count for sonnet generation.
         '''
 
         emission = ''
@@ -289,6 +291,120 @@ class HiddenMarkovModel:
             # won't bring us over syllable max
             for i, p_obs in enumerate(self.O[state]): 
                 if cur_syls + n_syls[i] <= 10: 
+                    options.append(p_obs)
+                    total_prob += p_obs
+                else:
+                    options.append(0)
+
+            # Select the next observation
+            options = np.array([x / total_prob for x in options])
+            next_obs = np.random.choice(range(len(self.O[state])), p=options)
+            emission += str(next_obs) + "-"
+            cur_syls += n_syls[next_obs]
+
+            # Sample next state.
+            rand_var = random.uniform(0, 1)
+            next_state = 0
+
+            while rand_var > 0:
+                rand_var -= self.A[state][next_state]
+                next_state += 1
+
+            next_state -= 1
+            state = next_state
+
+        emission += '<>'
+        emission = emission.replace('-<>','')
+
+        return emission
+
+    def generate_emission_haiku5(self, start_obs, n_syls):
+        '''
+        Generates an emission of length M, assuming that the starting state
+        is chosen uniformly at random. 
+
+        Arguments:
+            M:          Length of the emission to generate.
+
+        Returns:
+            emission:   The randomly generated emission as a string.
+
+        Handles syllable count for sonnet generation.
+        '''
+
+        emission = ''
+        state = random.choice(range(self.L))
+        start_ind = 1
+        next_obs = start_obs
+        emission += str(next_obs) + "-"
+        cur_syls = n_syls[start_obs]
+
+        while cur_syls < 5: # While line isn't 10 syllables long
+            # Will store probability distribution of next observation options
+            options = [] 
+            total_prob = 0.0
+
+            # Sample next word from normalized distribution of words that 
+            # won't bring us over syllable max
+            for i, p_obs in enumerate(self.O[state]): 
+                if cur_syls + n_syls[i] <= 5: 
+                    options.append(p_obs)
+                    total_prob += p_obs
+                else:
+                    options.append(0)
+
+            # Select the next observation
+            options = np.array([x / total_prob for x in options])
+            next_obs = np.random.choice(range(len(self.O[state])), p=options)
+            emission += str(next_obs) + "-"
+            cur_syls += n_syls[next_obs]
+
+            # Sample next state.
+            rand_var = random.uniform(0, 1)
+            next_state = 0
+
+            while rand_var > 0:
+                rand_var -= self.A[state][next_state]
+                next_state += 1
+
+            next_state -= 1
+            state = next_state
+
+        emission += '<>'
+        emission = emission.replace('-<>','')
+
+        return emission
+
+    def generate_emission_haiku7(self, start_obs, n_syls):
+        '''
+        Generates an emission of length M, assuming that the starting state
+        is chosen uniformly at random. 
+
+        Arguments:
+            M:          Length of the emission to generate.
+
+        Returns:
+            emission:   The randomly generated emission as a string.
+
+        Handles syllable count for sonnet generation.
+        '''
+
+        emission = ''
+        state = random.choice(range(self.L))
+        start_ind = 1
+        next_obs = start_obs
+        emission += str(next_obs) + "-"
+        cur_syls = n_syls[start_obs]
+
+        while cur_syls < 7: # While line isn't 10 syllables long
+            # Will store probability distribution of next observation options
+            options = [] 
+            total_prob = 0.0
+
+            # Sample next word from normalized distribution of words that 
+            # won't bring us over syllable max
+            for i, p_obs in enumerate(self.O[state]): 
+                if cur_syls + n_syls[i] <= 7: 
                     options.append(p_obs)
                     total_prob += p_obs
                 else:

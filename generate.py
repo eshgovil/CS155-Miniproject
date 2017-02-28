@@ -3,6 +3,7 @@
 
 import random, json
 from HMM import *
+import numpy as np
 
 # Data from pre-processing
 out_quatrains       = 'out_quatrains.csv' 
@@ -130,16 +131,11 @@ with open(out_couplets_rhymes, 'r') as rf:
     rd = rf.read()
     couplet_rhymes = json.loads(rd)
 
-quatrainStates = 30
-quatrainObservations = len(quatrainWordMap)
-voltaStates = 26
-voltaObservations = len(voltaWordMap)
-coupletStates = 24
-coupletObservations = len(coupletWordMap)
-
 def generate_quatrain(quatHMM):
     '''
     Generates a single quatrain. Quatrains follow the ABAB rhyme scheme.
+
+    Uses functions from HMM.py
     '''
     quatrain = ''
     a_rhyme = ''
@@ -231,6 +227,44 @@ def generate_volta(voltHMM):
     volta = volta.replace(',\n<>', '.\n')
     return volta
 
+def generate_haiku(haikuHMM):
+    '''
+    Generates a single haiku. Uses volta data.
+    '''
+    haiku = ''
+
+    for i in range(3): 
+        if i == 0: # Line A1
+            firstWordStr = str(random.choice(list(voltaWordMap.keys())))
+            line = haikuHMM.generate_emission_haiku5(voltaWordMap[firstWordStr], volta_n_syls)
+
+        elif i == 1: # Line B1
+            firstWordStr = str(random.choice(list(voltaWordMap.keys())))
+            line = haikuHMM.generate_emission_haiku7(voltaWordMap[firstWordStr], volta_n_syls)
+
+        elif i == 2: # Line A2
+            firstWordStr = str(random.choice(list(voltaWordMap.keys())))
+            line = haikuHMM.generate_emission_haiku5(voltaWordMap[firstWordStr], volta_n_syls)
+
+        # Split up the line and reverse the order of the emission
+        line = line.split('-')
+        line.reverse()
+
+        # Map the integers in the emission back to their corresponding strings
+        line = ' '.join([str(voltaIntMap[int(x)]) for x in line])
+
+        # Capitalize the first letter of each line
+        line = line[0].upper() + line[1:]
+        line = line.replace(' i ', ' I ')
+
+        # Comma at the end of each line
+        haiku += line + ',\n'
+
+    # End the volta with a period
+    haiku += '<>'
+    haiku = haiku.replace(',\n<>', '.\n')
+    return haiku
+
 def generate_couplet(coupletHMM):
     '''
     Generates a single couplet. couplets follow the ABAB rhyme scheme.
@@ -268,8 +302,54 @@ def generate_couplet(coupletHMM):
     couplet = couplet.replace(',\n<>', '.\n')
     return couplet
 
+# Train HMM and generate emissions
+
+# CHOOSE NUMBER OF STATES and ITERATIONS
+quatrainStates = 8
+quatrainObservations = len(quatrainWordMap)
+voltaStates = 8
+voltaObservations = len(voltaWordMap)
+coupletStates = 8
+coupletObservations = len(coupletWordMap)
+numiters = 1000
+
 # Train an HMM for the Quatrains
-quatHMM = unsupervised_HMM(quatrainX, quatrainStates, quatrainObservations, 5)
+quatHMM = unsupervised_HMM(quatrainX, quatrainStates, quatrainObservations, numiters)
+
+print('')
+# Print the transition matrix for quatrains
+print("Transition Matrix:")
+print('#' * 70)
+for i in range(len(quatHMM.A)):
+    print(''.join("{:<12.3e}".format(quatHMM.A[i][j]) for j in range(len(quatHMM.A[i]))))
+print('')
+print('')
+
+# Print top 10 words based on probabilitiy for each state for quatrains
+for state in range(5):
+    print('List of top 10 words and their corresponding integer assignments and probabilities')
+    print('for Hidden state ' + str(state))
+    maxprobwords = ['' for i in range(10)]
+    maxprobints = [0. for i in range(10)]
+    maxprobs = [0. for i in range(10)]
+    maxprobwords[0] = str(quatrainIntMap[np.argmax(quatHMM.O[state])])
+    maxprobints[0] = np.argmax(quatHMM.O[state])
+    maxprobs[0] = quatHMM.O[state][maxprobints[0]]
+    for z in range(9):
+        maxprobwords[z+1] = quatHMM.O[state][0]
+        maxprobints[z+1] = 0
+        maxprobs[z+1] = quatHMM.O[state][maxprobints[z+1]]
+        for i in range(quatHMM.D):
+            if quatHMM.O[state][i] >= quatHMM.O[state][maxprobints[z+1]] \
+            and quatHMM.O[state][i] < quatHMM.O[state][maxprobints[z]]:
+                maxprobwords[z+1] = str(quatrainIntMap[i])
+                maxprobints[z+1] = i
+                maxprobs[z+1] = quatHMM.O[state][maxprobints[z+1]]
+    print(maxprobwords)
+    print(maxprobints)
+    print(maxprobs)
+    print('\n')
+
 quatrain_1 = generate_quatrain(quatHMM)
 quatrain_2 = generate_quatrain(quatHMM)
 
@@ -278,7 +358,7 @@ print(str(quatrain_1))
 print(str(quatrain_2))
 
 # Train an HMM for the Voltas
-voltHMM = unsupervised_HMM(voltaX, voltaStates, voltaObservations, 5)
+voltHMM = unsupervised_HMM(voltaX, voltaStates, voltaObservations, numiters)
 volta_1 = generate_volta(voltHMM)
 volta_2 = generate_volta(voltHMM)
 
@@ -287,7 +367,7 @@ print(str(volta_1))
 print(str(volta_2))
 
 # Train an HMM for the Coupletas
-coupletHMM = unsupervised_HMM(coupletX, coupletStates, coupletObservations, 5)
+coupletHMM = unsupervised_HMM(coupletX, coupletStates, coupletObservations, numiters)
 couplet_1 = generate_couplet(coupletHMM)
 couplet_2 = generate_couplet(coupletHMM)
 
@@ -295,4 +375,9 @@ print("\n")
 print(str(couplet_1))
 print(str(couplet_2))
 
+# Generate Haiku
+haikuHMM = unsupervised_HMM(voltaX, voltaStates, voltaObservations, numiters)
+haiku_1 = generate_haiku(haikuHMM)
 
+print('\n')
+print(str(haiku_1))
